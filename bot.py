@@ -5,19 +5,43 @@ from telebot.types import InlineKeyboardMarkup, InlineKeyboardButton
 BOT_TOKEN = os.getenv('BOT_TOKEN')
 bot = telebot.TeleBot(BOT_TOKEN)
 
+# Dictionary to store service details
+SERVICES = {
+    'haircut': {
+        'name': 'Haircut',
+        'price': 100,
+        'emoji': '💇'
+    },
+    'coloring': {
+        'name': 'Coloring',
+        'price': 500,
+        'emoji': '🎨'
+    },
+    'smoothening': {
+        'name': 'Smoothening',
+        'price': 350,
+        'emoji': '✨'
+    },
+    'beard': {
+        'name': 'Beard Trim',
+        'price': 100,
+        'emoji': '🧏‍♂️'
+    }
+}
+
 def get_services_keyboard():
-    """Create an inline keyboard with salon services"""
+    """Create an inline keyboard with salon services and their prices"""
     keyboard = InlineKeyboardMarkup()
-    # Add buttons for each service with their respective callback data
-    keyboard.row(
-        InlineKeyboardButton("Haircut 💇", callback_data="service_haircut")
-    )
-    keyboard.row(
-        InlineKeyboardButton("Coloring 🎨", callback_data="service_coloring")
-    )
-    keyboard.row(
-        InlineKeyboardButton("Smoothening ✨", callback_data="service_smoothening")
-    )
+    
+    # Add buttons for each service with their respective callback data and prices
+    for service_id, details in SERVICES.items():
+        button_text = f"{details['name']} {details['emoji']} - ₹{details['price']}"
+        keyboard.row(
+            InlineKeyboardButton(
+                button_text, 
+                callback_data=f"service_{service_id}"
+            )
+        )
     return keyboard
 
 @bot.message_handler(commands=['start', 'hello'])
@@ -46,8 +70,13 @@ def show_services_menu(message):
 @bot.callback_query_handler(func=lambda call: call.data.startswith('service_'))
 def handle_service_selection(call):
     """Handle service selection callbacks"""
-    service = call.data.split('_')[1]
-    response = f"You've selected {service.capitalize()}!"
+    service_id = call.data.split('_')[1]
+    service = SERVICES[service_id]
+    
+    response = (
+        f"You've selected {service['name']} {service['emoji']}\n"
+        f"Price: ₹{service['price']}"
+    )
     
     # Update the message to show the selection
     bot.edit_message_text(
@@ -59,5 +88,8 @@ def handle_service_selection(call):
     # Answer the callback query to remove the loading state
     bot.answer_callback_query(call.id)
 
+@bot.message_handler(func=lambda msg: True)
+def echo_all(message):
+    show_services_menu(message)
 
 bot.infinity_polling()
