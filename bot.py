@@ -3,9 +3,13 @@ import telebot
 from telebot.types import InlineKeyboardMarkup, InlineKeyboardButton
 from datetime import datetime, timedelta
 import calendar
+from db_manager import DatabaseManager
 
 BOT_TOKEN = os.getenv('BOT_TOKEN')
 bot = telebot.TeleBot(BOT_TOKEN)
+
+# Initialize database manager
+db = DatabaseManager()
 
 # [Previous service and time slots dictionaries remain the same]
 SERVICES = {
@@ -36,6 +40,8 @@ def get_services_keyboard():
     """Create an inline keyboard with salon services and their prices"""
     keyboard = InlineKeyboardMarkup()
     for service_id, details in SERVICES.items():
+        # print(details)
+        # print(service_id)
         button_text = f"{details['name']} {details['emoji']} - ₹{details['price']}"
         keyboard.row(
             InlineKeyboardButton(
@@ -224,14 +230,40 @@ def handle_date_selection(call):
 @bot.callback_query_handler(func=lambda call: call.data.startswith('time_'))
 def handle_time_selection(call):
     """Handle time slot selection"""
-    _, date, time = call.data.split('_', 2)
-    year, month, day = date.split('-')
+    _, date_str, time = call.data.split('_', 2)
+    year, month, day = date_str.split('-')
+    
+    # Convert to datetime
+    date = datetime.strptime(f"{year}-{month}-{day}", "%Y-%m-%d")
+    
+    # Check availability
+    if not db.check_availability(date, time):
+        bot.answer_callback_query(call.id, "Sorry, this time slot is already booked!")
+        return
+    
+    # Get service details from user state (you'll need to implement this)
+    service_id = "haircut"  # This should come from user state
+    service = SERVICES[service_id]
+    
+    # Create appointment and get the data dictionary back
+    appointment_data = db.create_appointment(
+        user_id=call.from_user.id,
+        user_name=call.from_user.username or call.from_user.first_name,
+        service_id=service_id,
+        date=date,
+        time_slot=time,
+        price=service['price']
+    )
     
     confirmation_text = (
         f"🎉 Great! Your appointment is scheduled for:\n"
         f"📅 Date: {day}/{month}/{year}\n"
-        f"🕒 Time: {time}\n\n"
+        f"🕒 Time: {time}\n"
+        f"💇 Service: {service['name']}\n"
+        f"💰 Price: ₹{service['price']}\n\n"
+        f"Booking ID: #{appointment_data['id']}\n\n"
         f"We'll send you a reminder before your appointment.\n"
+        f"Type /bookings to view your appointments.\n"
         f"Type /start to make another booking."
     )
     
@@ -259,8 +291,30 @@ def handle_ignore_callback(call):
     """Handle callbacks that should be ignored"""
     bot.answer_callback_query(call.id)
 
-@bot.message_handler(func=lambda msg: True)
-def echo_all(message):
-    show_services_menu(message)
+# @bot.message_handler(func=lambda msg: True)
+# def echo_all(message):
+#     show_services_menu(message)
+
+@bot.message_handler(commands=['bookings'])
+def show_bookings(message):
+    appointments = db.get_user_appointments(message.from_user.id)
+    
+    if not appointments:
+        bot.reply_to(message, "You don't have any upcoming appointments.")
+        return
+    
+    response = "Your upcoming appointments:\n\n"
+    for apt in appointments:
+        service = SERVICES[apt.service_id]
+        response += (
+            f"Booking ID: #{apt.id}\n"
+            f"Service: {service['name']}\n"
+            f"Date: {apt.date.strftime('%d/%m/%Y')}\n"
+            f"Time: {apt.time_slot}\n"
+            f"Price: ₹{apt.price}\n"
+            f"-------------------\n"
+        )
+    
+    bot.reply_to(message, response)
 
 bot.infinity_polling()
