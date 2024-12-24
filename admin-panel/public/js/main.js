@@ -62,20 +62,45 @@ async function loadAppointments(date) {
         const response = await fetch(`/api/appointments/${date || ''}`);
         const appointments = await response.json();
 
-        appointmentsList.innerHTML = appointments.length ? 
-            appointments.map(appointment => `
+        if (appointments.length) {
+            appointmentsList.innerHTML = appointments
+                .map(appointment => `
+                    <div class="appointment-card">
+                        <p class="time">🕒 ${appointment.time_slot}</p>
+                        <p><strong>Service:</strong> ${getServiceEmoji(appointment.service_id)} ${appointment.service_id}</p>
+                        <p><strong>Customer:</strong> 👤 ${appointment.user_name}</p>
+                        <p class="price"><strong>Price:</strong> ₹${appointment.price}</p>
+                    </div>
+                `).join('');
+        } else {
+            appointmentsList.innerHTML = `
                 <div class="appointment-card">
-                    <p><strong>Time:</strong> ${appointment.time_slot}</p>
-                    <p><strong>Service:</strong> ${appointment.service_id}</p>
-                    <p><strong>Customer:</strong> ${appointment.user_name}</p>
-                    <p><strong>Price:</strong> ₹${appointment.price}</p>
+                    <p style="text-align: center; color: var(--text-secondary);">
+                        No appointments scheduled for this date
+                    </p>
                 </div>
-            `).join('') :
-            '<p>No appointments for this date</p>';
+            `;
+        }
     } catch (error) {
-        appointmentsList.innerHTML = '<p>Error loading appointments</p>';
+        appointmentsList.innerHTML = `
+            <div class="appointment-card">
+                <p style="text-align: center; color: #ef4444;">
+                    Error loading appointments. Please try again.
+                </p>
+            </div>
+        `;
         console.error('Error:', error);
     }
+}
+
+// Helper function to get emoji for service
+function getServiceEmoji(serviceId) {
+    const emojis = {
+        'haircut': '💇',
+        'coloring': '🎨',
+        'smoothening': '✨'
+    };
+    return emojis[serviceId] || '💅';
 }
 
 // Handle date selection

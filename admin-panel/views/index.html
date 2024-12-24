@@ -5,25 +5,28 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Salon Admin Panel</title>
     <link rel="stylesheet" href="/css/styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/dayjs@1.11.10/dayjs.min.js"></script>
 </head>
 <body>
     <div class="container">
         <header>
-            <h1>Salon Admin Panel</h1>
+            <h1>✨ Salon Admin Panel</h1>
             <div class="date-nav">
-                <button onclick="previousMonth()">&lt;</button>
+                <button onclick="previousMonth()">← Previous</button>
                 <h2 id="currentMonth">Loading...</h2>
-                <button onclick="nextMonth()">&gt;</button>
+                <button onclick="nextMonth()">Next →</button>
             </div>
         </header>
 
-        <div class="calendar" id="calendar">
-            <!-- Calendar will be generated here -->
+        <div class="calendar-container">
+            <div class="calendar" id="calendar">
+                <!-- Calendar will be generated here -->
+            </div>
         </div>
 
-        <div class="appointments" id="appointments">
-            <h3>Appointments</h3>
+        <div class="appointments">
+            <h3>📅 Appointments</h3>
             <div id="appointmentsList">
                 <!-- Appointments will be listed here -->
             </div>
