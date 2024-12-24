@@ -11,6 +11,8 @@ bot = telebot.TeleBot(BOT_TOKEN)
 # Initialize database manager
 db = DatabaseManager()
 
+user_selections = {} # Store temporary user selections
+
 # [Previous service and time slots dictionaries remain the same]
 SERVICES = {
     'haircut': {
@@ -184,7 +186,7 @@ def handle_service_selection(call):
     """Handle service selection callbacks"""
     service_id = call.data.split('_')[1]
     service = SERVICES[service_id]
-    
+    user_selections['service_id'] = service_id
     response = (
         f"Selected Service: {service['name']} {service['emoji']}\n"
         f"Price: ₹{service['price']}\n\n"
@@ -242,7 +244,7 @@ def handle_time_selection(call):
         return
     
     # Get service details from user state (you'll need to implement this)
-    service_id = "haircut"  # This should come from user state
+    service_id = user_selections['service_id'] # This should come from user state
     service = SERVICES[service_id]
     
     # Create appointment and get the data dictionary back
@@ -254,7 +256,8 @@ def handle_time_selection(call):
         time_slot=time,
         price=service['price']
     )
-    
+    # Clean up the temporary storage
+    del user_selections['service_id']
     confirmation_text = (
         f"🎉 Great! Your appointment is scheduled for:\n"
         f"📅 Date: {day}/{month}/{year}\n"
