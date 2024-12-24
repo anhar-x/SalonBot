@@ -3,3 +3,4 @@ env/
 salon_bookings.db
 __pycache__/
 *.pyc
+admin-panel/node_modules/
