@@ -27,29 +27,29 @@ body {
 .container {
     max-width: 1200px;
     margin: 0 auto;
-    padding: 2rem;
+    padding: 1rem;
 }
 
 header {
-    margin-bottom: 2rem;
+    margin-bottom: 1.5rem;
     background-color: var(--surface-color);
-    padding: 1.5rem;
+    padding: 1rem;
     border-radius: 12px;
     box-shadow: var(--shadow-md);
 }
 
 h1 {
     color: var(--primary-color);
-    font-size: 1.875rem;
+    font-size: 1.5rem;
     font-weight: 700;
-    margin-bottom: 1rem;
+    margin-bottom: 0.5rem;
 }
 
 .date-nav {
     display: flex;
     align-items: center;
-    gap: 1.5rem;
-    margin: 1.5rem 0;
+    gap: 1rem;
+    margin: 1rem 0;
 }
 
 .date-nav button {
@@ -79,30 +79,35 @@ h1 {
 
 .calendar-container {
     background-color: var(--surface-color);
-    padding: 1.5rem;
+    padding: 1rem;
     border-radius: 12px;
     box-shadow: var(--shadow-md);
-    margin-bottom: 2rem;
+    margin-bottom: 0;
+    height: fit-content;
 }
 
 .calendar {
     display: grid;
     grid-template-columns: repeat(7, 1fr);
-    gap: 0.5rem;
+    gap: 0.25rem;
+    max-width: 800px;
+    margin: 0 auto;
 }
 
 .calendar-day {
     aspect-ratio: 1;
-    padding: 0.5rem;
+    padding: 0.25rem;
     border: 1px solid var(--border-color);
-    border-radius: 8px;
+    border-radius: 6px;
     text-align: center;
     cursor: pointer;
     transition: all 0.2s;
     font-weight: 500;
     display: flex;
+    flex-direction: column;
     align-items: center;
     justify-content: center;
+    position: relative;
 }
 
 .calendar-day:hover {
@@ -134,9 +139,27 @@ h1 {
 }
 
 .calendar-day.has-appointments {
-    background-color: var(--secondary-color);
+    background-color: var(--background-color);
+    font-weight: 600;
+}
+
+.calendar-day.has-appointments::after {
+    content: '';
+    position: absolute;
+    bottom: 2px;
+    width: 4px;
+    height: 4px;
+    background-color: var(--primary-color);
+    border-radius: 50%;
+}
+
+.calendar-day.has-appointments:hover {
+    background-color: var(--primary-light);
     color: white;
-    border-color: var(--secondary-color);
+}
+
+.calendar-day.has-appointments:hover::after {
+    background-color: white;
 }
 
 .calendar-day.selected {
@@ -147,25 +170,33 @@ h1 {
     box-shadow: var(--shadow-md);
 }
 
+.calendar-day.selected::after {
+    background-color: white;
+}
+
 .appointments {
     background-color: var(--surface-color);
-    padding: 1.5rem;
+    padding: 1rem;
     border-radius: 12px;
     box-shadow: var(--shadow-md);
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
 }
 
 .appointments h3 {
     color: var(--text-primary);
-    font-size: 1.5rem;
-    margin-bottom: 1.5rem;
-    padding-bottom: 0.75rem;
-    border-bottom: 2px solid var(--border-color);
+    font-size: 1.25rem;
+    margin-bottom: 1rem;
+    padding-bottom: 0.5rem;
+    flex-shrink: 0;
 }
 
 .appointment-card {
-    padding: 1.25rem;
+    padding: 1rem;
     border: 1px solid var(--border-color);
-    margin-bottom: 1rem;
+    margin-bottom: 0.75rem;
     border-radius: 8px;
     transition: all 0.2s;
     background-color: var(--background-color);
@@ -198,6 +229,34 @@ h1 {
     font-weight: 600;
 }
 
+#appointmentsList {
+    overflow-y: auto;
+    flex-grow: 1;
+    padding-right: 0.5rem;
+}
+
+#appointmentsList::-webkit-scrollbar {
+    width: 8px;
+}
+
+#appointmentsList::-webkit-scrollbar-track {
+    background: var(--background-color);
+    border-radius: 4px;
+}
+
+#appointmentsList::-webkit-scrollbar-thumb {
+    background: var(--primary-light);
+    border-radius: 4px;
+}
+
+#appointmentsList::-webkit-scrollbar-thumb:hover {
+    background: var(--primary-color);
+}
+
+.appointment-card:last-child {
+    margin-bottom: 0.5rem;
+}
+
 @media (max-width: 768px) {
     .container {
         padding: 1rem;
@@ -215,5 +274,94 @@ h1 {
     #currentMonth {
         font-size: 1rem;
         min-width: 150px;
+    }
+}
+
+@media (min-width: 1024px) {
+    .main-content {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1.5rem;
+    }
+
+    .calendar-container {
+        margin-bottom: 0;
+    }
+}
+
+@media (max-width: 1023px) {
+    .main-content {
+        grid-template-columns: 1fr;
+        height: auto;
+    }
+
+    .appointments {
+        height: 400px;
+    }
+}
+
+.main-content {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+    height: calc(100vh - 120px);
+}
+
+.calendar-container {
+    margin-bottom: 0;
+    height: fit-content;
+}
+
+.appointments {
+    padding: 1rem;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.appointments h3 {
+    font-size: 1.25rem;
+    margin-bottom: 1rem;
+    padding-bottom: 0.5rem;
+    flex-shrink: 0;
+}
+
+#appointmentsList {
+    overflow-y: auto;
+    flex-grow: 1;
+    padding-right: 0.5rem;
+}
+
+#appointmentsList::-webkit-scrollbar {
+    width: 8px;
+}
+
+#appointmentsList::-webkit-scrollbar-track {
+    background: var(--background-color);
+    border-radius: 4px;
+}
+
+#appointmentsList::-webkit-scrollbar-thumb {
+    background: var(--primary-light);
+    border-radius: 4px;
+}
+
+#appointmentsList::-webkit-scrollbar-thumb:hover {
+    background: var(--primary-color);
+}
+
+.appointment-card:last-child {
+    margin-bottom: 0.5rem;
+}
+
+@media (max-width: 1023px) {
+    .main-content {
+        grid-template-columns: 1fr;
+        height: auto;
+    }
+
+    .appointments {
+        height: 400px;
     }
 } 

@@ -1,5 +1,18 @@
 let currentDate = dayjs();
 let selectedDate = null;
+let datesWithAppointments = [];
+
+// Add this function to fetch dates with appointments
+async function fetchAppointmentDates() {
+    try {
+        const yearMonth = currentDate.format('YYYY-MM');
+        const response = await fetch(`/api/appointments/dates/${yearMonth}`);
+        datesWithAppointments = await response.json();
+    } catch (error) {
+        console.error('Error fetching appointment dates:', error);
+        datesWithAppointments = [];
+    }
+}
 
 // Initialize the calendar
 function initCalendar() {
@@ -15,7 +28,10 @@ function updateMonthDisplay() {
 }
 
 // Render the calendar
-function renderCalendar() {
+async function renderCalendar() {
+    // Fetch dates with appointments first
+    await fetchAppointmentDates();
+    
     const calendar = document.getElementById('calendar');
     calendar.innerHTML = '';
 
@@ -44,11 +60,30 @@ function renderCalendar() {
     for (let i = 1; i <= daysInMonth; i++) {
         const dayElement = document.createElement('div');
         dayElement.className = 'calendar-day';
-        dayElement.textContent = i;
         
+        // Create the date string in YYYY-MM-DD format
         const dateString = currentDate.date(i).format('YYYY-MM-DD');
-        dayElement.onclick = () => selectDate(dateString);
         
+        // Check if this date has appointments
+        if (datesWithAppointments.includes(dateString)) {
+            dayElement.classList.add('has-appointments');
+            
+            // Add appointment indicator dot
+            const dot = document.createElement('div');
+            dot.className = 'appointment-dot';
+            dayElement.appendChild(dot);
+        }
+
+        // Create the date number element
+        const dateNumber = document.createElement('span');
+        dateNumber.textContent = i;
+        dayElement.appendChild(dateNumber);
+        
+        if (selectedDate === dateString) {
+            dayElement.classList.add('selected');
+        }
+        
+        dayElement.onclick = () => selectDate(dateString, dayElement);
         calendar.appendChild(dayElement);
     }
 }
@@ -114,17 +149,20 @@ function selectDate(dateString) {
 }
 
 // Navigation functions
-function previousMonth() {
+async function previousMonth() {
     currentDate = currentDate.subtract(1, 'month');
     updateMonthDisplay();
-    renderCalendar();
+    await renderCalendar();
 }
 
-function nextMonth() {
+async function nextMonth() {
     currentDate = currentDate.add(1, 'month');
     updateMonthDisplay();
-    renderCalendar();
+    await renderCalendar();
 }
 
 // Initialize when page loads
-document.addEventListener('DOMContentLoaded', initCalendar); 
+document.addEventListener('DOMContentLoaded', () => {
+    updateMonthDisplay();
+    renderCalendar();
+}); 

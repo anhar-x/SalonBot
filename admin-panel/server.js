@@ -62,6 +62,26 @@ app.get('/api/appointments', (req, res) => {
     });
 });
 
+// Add this new endpoint
+app.get('/api/appointments/dates/:yearMonth', (req, res) => {
+    const [year, month] = req.params.yearMonth.split('-');
+    const query = `
+        SELECT DISTINCT date(date) as booking_date
+        FROM appointments
+        WHERE strftime('%Y', date) = ? 
+        AND strftime('%m', date) = ?
+    `;
+    
+    db.all(query, [year, month.padStart(2, '0')], (err, rows) => {
+        if (err) {
+            res.status(500).json({ error: err.message });
+            return;
+        }
+        const dates = rows.map(row => row.booking_date);
+        res.json(dates);
+    });
+});
+
 app.listen(port, () => {
     console.log(`Admin panel running at http://localhost:${port}`);
 }); 
