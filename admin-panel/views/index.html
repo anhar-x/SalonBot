@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Salon Admin Panel</title>
+    <link rel="stylesheet" href="/css/styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/dayjs@1.11.10/dayjs.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Salon Admin Panel</h1>
+            <div class="date-nav">
+                <button onclick="previousMonth()">&lt;</button>
+                <h2 id="currentMonth">Loading...</h2>
+                <button onclick="nextMonth()">&gt;</button>
+            </div>
+        </header>
+
+        <div class="calendar" id="calendar">
+            <!-- Calendar will be generated here -->
+        </div>
+
+        <div class="appointments" id="appointments">
+            <h3>Appointments</h3>
+            <div id="appointmentsList">
+                <!-- Appointments will be listed here -->
+            </div>
+        </div>
+    </div>
+    <script src="/js/main.js"></script>
+</body>
+</html> 
