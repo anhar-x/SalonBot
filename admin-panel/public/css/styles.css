@@ -43,13 +43,15 @@ h1 {
     font-size: 1.5rem;
     font-weight: 700;
     margin-bottom: 0.5rem;
+    text-align: center;
 }
 
 .date-nav {
     display: flex;
     align-items: center;
     gap: 1rem;
-    margin: 1rem 0;
+    margin-bottom: 1rem;
+    justify-content: center;
 }
 
 .date-nav button {
