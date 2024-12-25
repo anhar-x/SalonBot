@@ -100,8 +100,22 @@ async function loadAppointments(date) {
         if (appointments.length) {
             appointmentsList.innerHTML = appointments
                 .map(appointment => `
-                    <div class="appointment-card">
-                        <p class="time">🕒 ${appointment.time_slot}</p>
+                    <div class="appointment-card ${appointment.status === 'cancelled' ? 'cancelled' : ''}">
+                        <div class="appointment-header">
+                            <p class="time">🕒 ${appointment.time_slot}</p>
+                            <div class="appointment-actions">
+                                ${appointment.status !== 'cancelled' ? `
+                                    <button 
+                                        class="cancel-btn" 
+                                        onclick="cancelAppointment(${appointment.id}, this)"
+                                    >
+                                        Cancel
+                                    </button>
+                                ` : `
+                                    <span class="status-badge cancelled">Cancelled</span>
+                                `}
+                            </div>
+                        </div>
                         <p><strong>Service:</strong> ${getServiceEmoji(appointment.service_id)} ${appointment.service_id}</p>
                         <p><strong>Customer:</strong> 👤 ${appointment.user_name}</p>
                         <p class="price"><strong>Price:</strong> ₹${appointment.price}</p>
@@ -159,6 +173,54 @@ async function nextMonth() {
     currentDate = currentDate.add(1, 'month');
     updateMonthDisplay();
     await renderCalendar();
+}
+
+// Add the cancelAppointment function
+async function cancelAppointment(appointmentId, buttonElement) {
+    if (!confirm('Are you sure you want to cancel this appointment?')) {
+        return;
+    }
+
+    const card = buttonElement.closest('.appointment-card');
+    buttonElement.disabled = true;
+    buttonElement.textContent = 'Cancelling...';
+
+    try {
+        const response = await fetch(`/api/appointments/cancel/${appointmentId}`, {
+            method: 'POST'
+        });
+
+        if (!response.ok) {
+            throw new Error('Failed to cancel appointment');
+        }
+
+        // Update the UI
+        card.classList.add('cancelled');
+        const actionsDiv = buttonElement.parentElement;
+        actionsDiv.innerHTML = '<span class="status-badge cancelled">Cancelled</span>';
+        
+        // Show success message
+        showNotification('Appointment cancelled successfully', 'success');
+    } catch (error) {
+        console.error('Error:', error);
+        buttonElement.disabled = false;
+        buttonElement.textContent = 'Cancel';
+        showNotification('Failed to cancel appointment', 'error');
+    }
+}
+
+// Add notification function
+function showNotification(message, type = 'success') {
+    const notification = document.createElement('div');
+    notification.className = `notification ${type}`;
+    notification.textContent = message;
+    
+    document.body.appendChild(notification);
+    
+    // Remove notification after 3 seconds
+    setTimeout(() => {
+        notification.remove();
+    }, 3000);
 }
 
 // Initialize when page loads

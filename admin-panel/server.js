@@ -82,6 +82,24 @@ app.get('/api/appointments/dates/:yearMonth', (req, res) => {
     });
 });
 
+// Add this new endpoint
+app.post('/api/appointments/cancel/:id', (req, res) => {
+    const appointmentId = req.params.id;
+    const query = `
+        UPDATE appointments 
+        SET status = 'cancelled' 
+        WHERE id = ?
+    `;
+    
+    db.run(query, [appointmentId], function(err) {
+        if (err) {
+            res.status(500).json({ error: err.message });
+            return;
+        }
+        res.json({ message: 'Appointment cancelled successfully' });
+    });
+});
+
 app.listen(port, () => {
     console.log(`Admin panel running at http://localhost:${port}`);
 }); 
