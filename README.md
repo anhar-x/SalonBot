@@ -43,7 +43,7 @@ A comprehensive salon booking system featuring a Telegram bot for customers to b
 1. Clone the repository
 
 2. Install Python dependencies:
-  `pip install -r requirements.txt'
+  - `pip install -r requirements.txt`
 
 3. Install Node.js dependencies:
   - `cd admin panel`
@@ -58,8 +58,7 @@ A comprehensive salon booking system featuring a Telegram bot for customers to b
 
 ### Starting the Admin Panel
 
-`cd admin-panel`
-
- `node server.js`
+  - `cd admin-panel`
+  -`node server.js`
 
 The admin panel will be available at `http://localhost:3000`
