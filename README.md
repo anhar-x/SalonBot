@@ -38,17 +38,18 @@ A comprehensive salon booking system featuring a Telegram bot for customers to b
 - HTML5/CSS3
 - Day.js for date handling
 
+  
+
 ## Usage
 
 ### Starting the Telegram bot
 
-bash
-python bot.py
+`python bot.py`
 
 ### Starting the Admin Panel
 
-bash
-cd admin-panel
-node server.js
+`cd admin-panel`
+
+ `node server.js`
 
 The admin panel will be available at `http://localhost:3000`
