@@ -54,11 +54,12 @@ A comprehensive salon booking system featuring a Telegram bot for customers to b
 
 ### Starting the Telegram bot
 
-`python bot.py`
+  - `python bot.py`
 
 ### Starting the Admin Panel
 
   - `cd admin-panel`
+    
   -`node server.js`
 
 The admin panel will be available at `http://localhost:3000`
