@@ -38,7 +38,17 @@ A comprehensive salon booking system featuring a Telegram bot for customers to b
 - HTML5/CSS3
 - Day.js for date handling
 
-  
+## Installation
+
+1. Clone the repository
+
+2. Install Python dependencies:
+  `pip install -r requirements.txt'
+
+3. Install Node.js dependencies:
+  - `cd admin panel`
+  - `npm install`
+
 
 ## Usage
 
